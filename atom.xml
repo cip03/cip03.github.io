@@ -15,36 +15,9 @@
     <id>http://clnx.github.io/posts/2016-02-12-name.html</id>
     <published>2016-02-12T00:00:00Z</published>
     <updated>2016-02-12T00:00:00Z</updated>
-    <summary type="html"><![CDATA[<div class="info">
-    Posted on February 12, 2016
-    
-        by clnx
-    
-</div>
-
-<div class="info">
-    
-    Tags: <a href="/tags/meta.html">meta</a>
-    
-</div>
-
-<p>The name, with its cheap, eye-rolling pun, smacks of shallowness and imposture.</p>
-<p>It’s fast and I like it, sorry.</p>
-
-<div id="disqus_thread"></div>
-<script>
-    (function() {
-        var d = document, s = d.createElement('script');
-        s.src = '//clnx-blog.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>
-    Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript"
-    rel="nofollow">comments powered by Disqus.</a>
-</noscript>
-]]></summary>
+    <summary type="html"><![CDATA[<h2 id="welcome">Welcome!</h2>
+<p>This is my personal blog on functional programming and its applications to graphics, physics and distributive computing. There may be occasional posts on logic + math, and hopefully not too many rants.</p>
+<p>I couldn’t find a rigid designator for it so I’m going with the lazy pun instead.</p>]]></summary>
 </entry>
 
 </feed>
