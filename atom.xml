@@ -17,7 +17,14 @@
     <updated>2016-02-12T00:00:00Z</updated>
     <summary type="html"><![CDATA[<h2 id="welcome">Welcome!</h2>
 <p>This is my personal blog on functional programming and its applications to graphics, physics and distributive computing. There may be occasional posts on logic + math, and hopefully not too many rants.</p>
-<p>I couldn’t find a rigid designator for it so I’m going with the lazy pun instead.</p>]]></summary>
+<p>I couldn’t find a rigid designator for it so I’m going with the lazy pun instead.</p>
+<h2 id="hakyll">Hakyll</h2>
+<p>Overall I’m very happy with <a href="http://jaspervdj.be/hakyll" title="Hakyll">Hakyll</a>. I think this <a href="https://github.com/clnx/clnx.github.io.src" title="Source Repo for this Blog">2</a> - <a href="https://github.com/clnx/clnx.github.io" title="Main GitHub Pages Repo">repo</a> setup is the easiest to work with on <a href="https://pages.github.com" title="GitHub Pages">GitHub Pages</a>. I stole some code from <a href="http://jozefg.bitbucket.org/" title="Code &amp; Co">Danny Gratzer’s blog</a> to get me started, but I got going quickly.</p>
+<h2 id="css-theme">CSS Theme</h2>
+<p>I started with the default <code>Hakyll</code> theme but made a few adjustments.</p>
+<p>All sizes, including fonts and page width, are relative (in <code>em</code> units). There is also no <code>font-family</code> setting, so the site will use the default fonts on all devices. Especially on high-dpi screens your eyes won’t be strained by the microscopic fixed text that so many sport, while on wide screens you won’t need binoculars and current line markers to navigate.</p>
+<p>The black icons are vectorial (<em>SVG</em>), so they look good on high-dpi too. With a <em>SVG</em> editor like <a href="https://inkscape.org/en/" title="Inkscape">Inkscape</a> it’s very fast to take some free icon from the net and delete layers, change colors and sizes, or make your own. The hover effect just uses the <em>CSS3</em> <code>opacity</code> property.</p>
+<p>Hope this pasta is simple enough for a copy.</p>]]></summary>
 </entry>
 
 </feed>
