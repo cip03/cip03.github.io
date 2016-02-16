@@ -10,7 +10,7 @@
     </author>
     <updated>2016-02-14T00:00:00Z</updated>
     <entry>
-    <title>Language-integrated databases: stumbles & mumbles</title>
+    <title>Language-integrated databases: stumbles and mumbles</title>
     <link href="http://clnx.github.io/posts/2016-02-14-muesli.html" />
     <id>http://clnx.github.io/posts/2016-02-14-muesli.html</id>
     <published>2016-02-14T00:00:00Z</published>
@@ -18,6 +18,21 @@
     <summary type="html"><![CDATA[<div id="abstract" class="section level2">
 <h2>Abstract</h2>
 <p>The state of the Haskell ecosystem with respect to databases has been characterized as <a href="https://github.com/Gabriel439/post-rfc/blob/master/sotu.md#databases-and-data-stores" title="State of the Haskell ecosystem - Gabriel Gonzales">immature</a>. Efforts have been made towards improving the bindings for various foreign systems, ensuring SQL query safety through static checking, and faking row polymorphism. An alternative approach is to implement a database as an EDSL. For example <a href="https://hackage.haskell.org/package/acid-state" title="acid-state - Hackage">acid-state</a> offers ACID semantics on top of normal serializable Haskell types. <a href="https://hackage.haskell.org/package/muesli" title="muesli - Hackage">muesli</a> takes this further by adding automatic index management, improving performance and removing much of the boilerplate, as needed in embedded environments.</p>
+<div id="contents" class="section level3">
+<h3>Contents</h3>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-problem">The problem</a></li>
+<li><a href="#my-idea">My idea</a></li>
+<li><a href="#the-details">The details</a></li>
+<li><a href="#related-work">Related work</a></li>
+<li><a href="#conclusions-and-further-work">Conclusions and further work</a>
+<ul>
+<li><a href="#immediate-upgrades">Immediate upgrades</a></li>
+<li><a href="#hopes-dreams">Hopes &amp; dreams</a></li>
+</ul></li>
+</ul>
+</div>
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
@@ -126,23 +141,23 @@
     <updated>2016-02-12T00:00:00Z</updated>
     <summary type="html"><![CDATA[<div id="welcome" class="section level2">
 <h2>Welcome!</h2>
-<p>This is my personal blog on functional programming and its applications to graphics, physics and distributive computing. There may be occasional posts on logic + math, and hopefully not too many rants.</p>
+<p>This is my personal blog on functional programming and its application to real-time simulations. There may be occasional posts on logic + math, and hopefully not too many rants.</p>
 <p>I couldn’t find a rigid designator for it so I’m going with the lazy pun instead.</p>
-<p>Beside the usual journal content (project updates, etc.) I’ll write review articles as grounded and complete as <a href="http://bartoszmilewski.com/" title="Bartosz Milewski&#39;s Programming Cafe">Bartosz Milewski’s</a>, with thoughtful examples as powerful as <a href="http://blog.sigfpe.com/" title="A Neighborhood of Infinity">Dan Piponi’s</a>, while keeping myself on the move as swiftly as <a href="http://jozefg.bitbucket.org/" title="Code &amp; Co">Danny Gratzer’s</a> juggling, with the purposefulness preached by <a href="https://www.youtube.com/watch?v=g3dkRsTqdDA" title="How to Write a Great Research Paper">Simon Peyton Jones</a> as fuel. And I only publish this preposterous claim now in order to boost my <a href="http://www.scottaaronson.com/blog/?p=2651" title="Article on Scott Aaronson&#39;s blog mentioning this technique">public humiliation learning</a>. Well, not really learning, as with the public notability of a punk like me there will be little outside interference, but even as a motivator it’ll do. I hope.</p>
+<p>Some other blogs that I like are <a href="http://bartoszmilewski.com/" title="Bartosz Milewski&#39;s Programming Cafe">Bartosz Milewski’s</a> for its comprehensive presentation of general topics, <a href="http://blog.sigfpe.com/" title="A Neighborhood of Infinity">Dan Piponi’s</a> for its concrete inquiries into abstract concepts, and <a href="http://jozefg.bitbucket.org/" title="Code &amp; Co">Danny Gratzer’s</a> for its meta stability while juggling. I’d write stuff mostly to help me think when I’m stuck, as preached by <a href="https://www.youtube.com/watch?v=g3dkRsTqdDA" title="How to Write a Great Research Paper">Simon Peyton Jones</a>, hoping to boost my <a href="http://www.scottaaronson.com/blog/?p=2651" title="Article on Scott Aaronson&#39;s blog mentioning this technique">public humiliation based</a> learning rate, or at least develop a new discipline for my fiat spaghetti brain.</p>
 </div>
-<div id="the-hakyllpandoclatex-combo" class="section level2">
-<h2>The Hakyll/pandoc/LaTeX combo</h2>
+<div id="the-hakyll-pandoc-latex-mathml-combo" class="section level2">
+<h2>The Hakyll / pandoc / LaTeX / MathML combo</h2>
 <p>Overall I’m very happy with <a href="http://jaspervdj.be/hakyll" title="Hakyll">Hakyll</a>. I think this <a href="https://github.com/clnx/clnx.github.io.src" title="Source Repo for this Blog">2</a> - <a href="https://github.com/clnx/clnx.github.io" title="Main GitHub Pages Repo">repo</a> setup is the easiest to work with <a href="https://pages.github.com" title="GitHub Pages">GitHub Pages</a> hosting. I stole some code from Danny’s blog to get me started, but I got going quickly.</p>
-<p>Hakyll comes integrated with the powerful, multilingual <a href="http://pandoc.org/README.html" title="Pandoc User’s Guide">pandoc</a>, which allows writing the posts in an enriched <a href="http://daringfireball.net/projects/markdown/" title="Markdown">Markdown</a> dialect I enjoy greatly. For instance, you can write paper-like articles, post them on your blog, and also generate a <code>pdf</code> or even <span class="math inline">\(\LaTeX\)</span> with the <code>pandoc</code> executable, all the while including <span class="math inline">\(\LaTeX\)</span> for math.</p>
-<p>To configure it you can use a standard <code>js</code> service like <code>MathJax</code>, or a remote image service like Google Chart API with the <code>WebTeX</code> option, which has the advantage that you don’t need to include the <code>js</code> script in all pages, in case you only rarely use math formulas, or you can generate math images directly on your server with the <a href="https://hackage.haskell.org/package/latex-formulae-hakyll-0.2.0.1" title="The latex-formulae-hakyll package on Hackage"><code>latex-formulae-hakyll</code> package</a>, which is also easy to setup.</p>
+<p><em>Hakyll</em> comes integrated with the powerful, multilingual <a href="http://pandoc.org/README.html" title="Pandoc User’s Guide">pandoc</a>, which allows writing the posts in an enriched <a href="http://daringfireball.net/projects/markdown/" title="Markdown">Markdown</a> dialect. For instance, you can write paper-like articles, post them on your blog, and also generate a <em>pdf</em> with the <code>pandoc</code> executable, all the while inlining <em>LaTeX</em> for math.</p>
+<p>For rendering you can use a standard <em>js</em> service like <em>MathJax</em>, or a remote image service like <em>Google Chart API</em> with the <a href="http://hackage.haskell.org/package/pandoc/docs/Text-Pandoc-Options.html#t:HTMLMathMethod" title="Documentation for pandoc math rendering options"><code>WebTeX</code></a> option, or you can generate math images directly on your server with the <a href="https://hackage.haskell.org/package/latex-formulae-hakyll-0.2.0.1" title="The latex-formulae-hakyll package on Hackage"><strong>latex-formulae-hakyll</strong></a> package, which is also easy to setup. Currently, the blog uses the <a href="http://hackage.haskell.org/package/pandoc/docs/Text-Pandoc-Options.html#t:HTMLMathMethod" title="Documentation for pandoc math rendering options"><code>MathML</code></a> option to generate <em>MathML</em> directly, and inserts an icon under the title if the <em>md</em> file is explicitly tagged with <code>math</code> in the header section, like this post, to notify users they should use a proper browser like <em>Firefox</em> or <em>Safari</em>.</p>
+<p>Here’s a test formula for you: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">^</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>ξ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mo>∞</mo></mrow><mo>∞</mo></msubsup><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.222em"></mspace><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>π</mi><mi>i</mi><mi>x</mi><mi>ξ</mi></mrow></msup><mspace width="0.167em"></mspace><mi>d</mi><mi>x</mi><mo>.</mo></mrow><annotation encoding="application/x-tex">\hat{f}(\xi) = \int_{-\infty}^\infty f(x)\ e^{- 2\pi i x \xi}\,dx.</annotation></semantics></math></p>
 </div>
 <div id="web-theme" class="section level2">
 <h2>Web theme</h2>
-<p>I started with the default <code>Hakyll</code> theme but made a few adjustments.</p>
-<p>All sizes, including fonts and page width, are relative (in <code>em</code> units). There is also no <code>font-family</code> setting, so the site will use the default fonts on all devices. Especially on high-dpi screens your eyes won’t be strained by the microscopic fixed text that so many sport, while on wide screens you won’t need binoculars and current line markers to navigate.</p>
-<p>The black icons are vectorial (<em>SVG</em>), so they look good on high-dpi too. With a <em>SVG</em> editor like <a href="https://inkscape.org/en/" title="Inkscape">Inkscape</a> it’s very fast to take some free icon from the net and delete layers, change colors and sizes, or make your own. The hover effect just uses the <em>CSS3</em> <code>opacity</code> property.</p>
-<p>I followed Dan’s example and inlined the <em>archive</em> page into <em>home</em> and <em>contact</em> into the footer. The reasoning is this: the text that would normally go there would be something generic, and I hope I’ll write more interesting things in the actual blog. So why would I pin the shittiest posts? Personal info belongs to social networking accounts. Plus, I think it helps with search engines robots’ situational awareness (humans too!) by being more honest.</p>
-<p>In short, <code>index.html</code> is the index. Groundbreaking, I know.</p>
+<p>I started with the default <em>Hakyll</em> theme but made a few adjustments.</p>
+<p>All sizes, including fonts and page width, are relative (in <code>em</code> units). There is also no <code>font-family</code> setting, so the site will use the default fonts on all devices. High-dpi screens won’t turn the text into a series of microscopic black holes, while on wide screens the need for binoculars and current line markers for navigation will be eschewed.</p>
+<p>The black icons are vectorial (<em>SVG</em>), so they look good on high-dpi too. With a <em>SVG</em> editor like <a href="https://inkscape.org/en/" title="Inkscape">Inkscape</a> it’s very fast to take some free icon from the net (wikipedia has plenty) and delete layers, change colors and sizes, or add your own. The hover effect just uses the <em>CSS3</em> <code>opacity</code> property.</p>
+<p>I followed Dan’s example and inlined the <em>archive</em> page into <em>home</em> and <em>contact</em> into the footer. The reasoning is this: the text that would normally go there would be something generic, and I hope I’ll write more interesting things in the actual blog. So why would I pin that? Personal info belongs to social networking accounts these days, and being more honest by putting the index into <code>index.html</code> should assist search engines robots’ situational awareness (humans’ too!).</p>
 <p>Hope this pasta is simple enough for a copy.</p>
 </div>]]></summary>
 </entry>

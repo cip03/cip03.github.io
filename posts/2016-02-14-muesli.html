@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Applicative Hazards - Language-integrated databases: stumbles & mumbles</title>
+        <title>Applicative Hazards - Language-integrated databases: stumbles and mumbles</title>
         <link rel="icon" href="../images/favicon.png" />
         <link rel="stylesheet" type="text/css" href="../css/default.css" />
         <link rel="alternate" type="application/atom+xml" title="Applicative Hazards - Atom" href="http://clnx.github.io/atom.xml" />
         <link rel="alternate" type="application/rss+xml" title="Applicative Hazards - RSS" href="http://clnx.github.io/rss.xml" />
-        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     </head>
     <body>
         <div id="header">
@@ -20,7 +19,7 @@
             </div>
         </div>
         <div id="content">
-<h1> Language-integrated databases: stumbles & mumbles </h1>
+<h1> Language-integrated databases: stumbles and mumbles </h1>
 <div class="info">
     Posted on February 14, 2016 by Călin Ardelean 
 </div>
@@ -34,6 +33,21 @@
 <div id="abstract" class="section level2">
 <h2>Abstract</h2>
 <p>The state of the Haskell ecosystem with respect to databases has been characterized as <a href="https://github.com/Gabriel439/post-rfc/blob/master/sotu.md#databases-and-data-stores" title="State of the Haskell ecosystem - Gabriel Gonzales">immature</a>. Efforts have been made towards improving the bindings for various foreign systems, ensuring SQL query safety through static checking, and faking row polymorphism. An alternative approach is to implement a database as an EDSL. For example <a href="https://hackage.haskell.org/package/acid-state" title="acid-state - Hackage">acid-state</a> offers ACID semantics on top of normal serializable Haskell types. <a href="https://hackage.haskell.org/package/muesli" title="muesli - Hackage">muesli</a> takes this further by adding automatic index management, improving performance and removing much of the boilerplate, as needed in embedded environments.</p>
+<div id="contents" class="section level3">
+<h3>Contents</h3>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-problem">The problem</a></li>
+<li><a href="#my-idea">My idea</a></li>
+<li><a href="#the-details">The details</a></li>
+<li><a href="#related-work">Related work</a></li>
+<li><a href="#conclusions-and-further-work">Conclusions and further work</a>
+<ul>
+<li><a href="#immediate-upgrades">Immediate upgrades</a></li>
+<li><a href="#hopes-dreams">Hopes &amp; dreams</a></li>
+</ul></li>
+</ul>
+</div>
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
@@ -135,7 +149,7 @@
 </div>
 
 <div id="disqus_thread"></div>
-<script>
+<script type="text/javascript">
     (function() {
         var d = document, s = d.createElement('script');
         s.src = '//clnx-blog.disqus.com/embed.js';
@@ -143,9 +157,6 @@
         (d.head || d.body).appendChild(s);
     })();
 </script>
-<noscript>
-    Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
-</noscript>
 
         </div>
         <div id="footer">
