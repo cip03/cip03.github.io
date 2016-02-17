@@ -6,8 +6,8 @@
         <title>Applicative Hazards - Pun hazards</title>
         <link rel="icon" href="../images/favicon.png" />
         <link rel="stylesheet" type="text/css" href="../css/default.css" />
-        <link rel="alternate" type="application/atom+xml" title="Applicative Hazards - Atom" href="http://clnx.github.io/atom.xml" />
-        <link rel="alternate" type="application/rss+xml" title="Applicative Hazards - RSS" href="http://clnx.github.io/rss.xml" />
+        <link rel="alternate" type="application/atom+xml" title="Applicative Hazards - Atom" href="http://cip03.github.io/atom.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Applicative Hazards - RSS" href="http://cip03.github.io/rss.xml" />
     </head>
     <body>
         <div id="header">
@@ -40,7 +40,7 @@
 </div>
 <div id="the-hakyll-pandoc-latex-mathml-combo" class="section level2">
 <h2>The Hakyll / pandoc / LaTeX / MathML combo</h2>
-<p>Overall I’m very happy with <a href="http://jaspervdj.be/hakyll" title="Hakyll">Hakyll</a>. I think this <a href="https://github.com/clnx/clnx.github.io.src" title="Source Repo for this Blog">2</a> - <a href="https://github.com/clnx/clnx.github.io" title="Main GitHub Pages Repo">repo</a> setup is the easiest to work with <a href="https://pages.github.com" title="GitHub Pages">GitHub Pages</a> hosting. I stole some code from Danny’s blog to get me started, but I got going quickly.</p>
+<p>Overall I’m very happy with <a href="http://jaspervdj.be/hakyll" title="Hakyll">Hakyll</a>. I think this <a href="https://github.com/cip03/cip03.github.io.src" title="Source Repo for this Blog">2</a> - <a href="https://github.com/cip03/cip03.github.io" title="Main GitHub Pages Repo">repo</a> setup is the easiest to work with <a href="https://pages.github.com" title="GitHub Pages">GitHub Pages</a> hosting. I stole some code from Danny’s blog to get me started, but I got going quickly.</p>
 <p><em>Hakyll</em> comes integrated with the powerful, multilingual <a href="http://pandoc.org/README.html" title="Pandoc User’s Guide">pandoc</a>, which allows writing the posts in an enriched <a href="http://daringfireball.net/projects/markdown/" title="Markdown">Markdown</a> dialect. For instance, you can write paper-like articles, post them on your blog, and also generate a <em>pdf</em> with the <code>pandoc</code> executable, all the while inlining <em>LaTeX</em> for math.</p>
 <p>For rendering you can use a standard <em>js</em> service like <em>MathJax</em>, or a remote image service like <em>Google Chart API</em> with the <a href="http://hackage.haskell.org/package/pandoc/docs/Text-Pandoc-Options.html#t:HTMLMathMethod" title="Documentation for pandoc math rendering options"><code>WebTeX</code></a> option, or you can generate math images directly on your server with the <a href="https://hackage.haskell.org/package/latex-formulae-hakyll-0.2.0.1" title="The latex-formulae-hakyll package on Hackage"><strong>latex-formulae-hakyll</strong></a> package, which is also easy to setup. Currently, the blog uses the <a href="http://hackage.haskell.org/package/pandoc/docs/Text-Pandoc-Options.html#t:HTMLMathMethod" title="Documentation for pandoc math rendering options"><code>MathML</code></a> option to generate <em>MathML</em> directly, and inserts an icon under the title if the <em>md</em> file is explicitly tagged with <code>math</code> in the header section, like this post, to notify users they should use a proper browser like <em>Firefox</em> or <em>Safari</em>.</p>
 <p>Here’s a test formula for you: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">^</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>ξ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mo>∞</mo></mrow><mo>∞</mo></msubsup><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.222em"></mspace><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>π</mi><mi>i</mi><mi>x</mi><mi>ξ</mi></mrow></msup><mspace width="0.167em"></mspace><mi>d</mi><mi>x</mi><mo>.</mo></mrow><annotation encoding="application/x-tex">\hat{f}(\xi) = \int_{-\infty}^\infty f(x)\ e^{- 2\pi i x \xi}\,dx.</annotation></semantics></math></p>
@@ -58,7 +58,7 @@
 <script type="text/javascript">
     (function() {
         var d = document, s = d.createElement('script');
-        s.src = '//clnx-blog.disqus.com/embed.js';
+        s.src = '//cip03-blog.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
@@ -69,7 +69,7 @@
             <div id="contact">
                 Contact me:
                 <a href="mailto:calinucs@gmail.com"><img class="icon" title="E-mail" alt="E-mail" src="../images/email.svg" /></a>
-                <a href="https://github.com/clnx"><img class="icon" title="GitHub" alt="GitHub" src="../images/github.svg" /></a>
+                <a href="https://github.com/cip03"><img class="icon" title="GitHub" alt="GitHub" src="../images/github.svg" /></a>
                 <a href="https://twitter.com/clnx"><img class="icon" title="Twitter" alt="Twitter" src="../images/twitter.svg" /></a>
                 <a href="https://plus.google.com/+C%C4%83linArdeleanT"><img class="icon" alt="Google+" title="Google+" src="../images/google.svg" /></a>
             </div>
