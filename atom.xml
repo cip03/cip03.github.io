@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Applicative Hazards</title>
-    <link href="http://cip03.github.io/atom.xml" rel="self" />
-    <link href="http://cip03.github.io" />
-    <id>http://cip03.github.io/atom.xml</id>
+    <link href="http://blog.cip03.xyz/atom.xml" rel="self" />
+    <link href="http://blog.cip03.xyz" />
+    <id>http://blog.cip03.xyz/atom.xml</id>
     <author>
         <name>Călin Ardelean</name>
         <email>calinucs@gmail.com</email>
@@ -11,8 +11,8 @@
     <updated>2016-02-14T00:00:00Z</updated>
     <entry>
     <title>Language-integrated databases: stumbles and mumbles</title>
-    <link href="http://cip03.github.io/posts/2016-02-14-muesli.html" />
-    <id>http://cip03.github.io/posts/2016-02-14-muesli.html</id>
+    <link href="http://blog.cip03.xyz/posts/2016-02-14-muesli.html" />
+    <id>http://blog.cip03.xyz/posts/2016-02-14-muesli.html</id>
     <published>2016-02-14T00:00:00Z</published>
     <updated>2016-02-14T00:00:00Z</updated>
     <summary type="html"><![CDATA[<div id="abstract" class="section level2">
@@ -135,8 +135,8 @@
 </entry>
 <entry>
     <title>Pun hazards</title>
-    <link href="http://cip03.github.io/posts/2016-02-12-name.html" />
-    <id>http://cip03.github.io/posts/2016-02-12-name.html</id>
+    <link href="http://blog.cip03.xyz/posts/2016-02-12-name.html" />
+    <id>http://blog.cip03.xyz/posts/2016-02-12-name.html</id>
     <published>2016-02-12T00:00:00Z</published>
     <updated>2016-02-12T00:00:00Z</updated>
     <summary type="html"><![CDATA[<div id="welcome" class="section level2">

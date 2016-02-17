@@ -3,14 +3,14 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/">
     <channel>
         <title>Applicative Hazards</title>
-        <link>http://cip03.github.io</link>
+        <link>http://blog.cip03.xyz</link>
         <description><![CDATA[Stories on functional programming and the real world]]></description>
-        <atom:link href="http://cip03.github.io/rss.xml" rel="self"
+        <atom:link href="http://blog.cip03.xyz/rss.xml" rel="self"
                    type="application/rss+xml" />
         <lastBuildDate>Sun, 14 Feb 2016 00:00:00 UT</lastBuildDate>
         <item>
     <title>Language-integrated databases: stumbles and mumbles</title>
-    <link>http://cip03.github.io/posts/2016-02-14-muesli.html</link>
+    <link>http://blog.cip03.xyz/posts/2016-02-14-muesli.html</link>
     <description><![CDATA[<div id="abstract" class="section level2">
 <h2>Abstract</h2>
 <p>The state of the Haskell ecosystem with respect to databases has been characterized as <a href="https://github.com/Gabriel439/post-rfc/blob/master/sotu.md#databases-and-data-stores" title="State of the Haskell ecosystem - Gabriel Gonzales">immature</a>. Efforts have been made towards improving the bindings for various foreign systems, ensuring SQL query safety through static checking, and faking row polymorphism. An alternative approach is to implement a database as an EDSL. For example <a href="https://hackage.haskell.org/package/acid-state" title="acid-state - Hackage">acid-state</a> offers ACID semantics on top of normal serializable Haskell types. <a href="https://hackage.haskell.org/package/muesli" title="muesli - Hackage">muesli</a> takes this further by adding automatic index management, improving performance and removing much of the boilerplate, as needed in embedded environments.</p>
@@ -129,12 +129,12 @@
 </div>
 </div>]]></description>
     <pubDate>Sun, 14 Feb 2016 00:00:00 UT</pubDate>
-    <guid>http://cip03.github.io/posts/2016-02-14-muesli.html</guid>
+    <guid>http://blog.cip03.xyz/posts/2016-02-14-muesli.html</guid>
     <dc:creator>Călin Ardelean</dc:creator>
 </item>
 <item>
     <title>Pun hazards</title>
-    <link>http://cip03.github.io/posts/2016-02-12-name.html</link>
+    <link>http://blog.cip03.xyz/posts/2016-02-12-name.html</link>
     <description><![CDATA[<div id="welcome" class="section level2">
 <h2>Welcome!</h2>
 <p>This is my personal blog on functional programming and its application to real-time simulations. There may be occasional posts on logic + math, and hopefully not too many rants.</p>
@@ -157,7 +157,7 @@
 <p>Hope this pasta is simple enough for a copy.</p>
 </div>]]></description>
     <pubDate>Fri, 12 Feb 2016 00:00:00 UT</pubDate>
-    <guid>http://cip03.github.io/posts/2016-02-12-name.html</guid>
+    <guid>http://blog.cip03.xyz/posts/2016-02-12-name.html</guid>
     <dc:creator>Călin Ardelean</dc:creator>
 </item>
 
