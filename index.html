@@ -20,11 +20,11 @@
         </div>
         <div id="content">
 
-<h1><a href="./posts/2016-02-22-name.html">Pun hazard</a></h1>
+<h1><a href="./posts/2016-02-23-blog-setup.html">Notes about this web site's bowels</a></h1>
 <div class="info">
     <a href="https://www.w3.org/Math/"><img id="mathml-img" title="This post contains inlined MathML. For proper rendering, please use a standards compliant browser, like Firefox or Safari." alt="MathML" src="./images/mathml.svg" /></a>
 
-    Posted on February 22, 2016 by Călin Ardelean 
+    Posted on February 23, 2016 by Călin Ardelean 
 </div>
 
 <div class="info">
@@ -33,18 +33,17 @@
 
 
 <div class="contents">
-<div id="welcome-to-the-jungle" class="section level2">
-<h2>Welcome to the jungle!</h2>
-<p>This is my personal blog on functional programming and its application to real-time simulation. You may expect intermittent pieces on logic <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∩</mo><annotation encoding="application/x-tex">\cap</annotation></semantics></math> math <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∩</mo><annotation encoding="application/x-tex">\cap</annotation></semantics></math> physics, and hopefully not too many rants. But ultimately, I have no clue what the blog will end up raving about. For all I know it could spawn enormous Juche pumas playing cylindrical Go along Iapetus’ equatorial ridge, sabotaging the moon’s hydrostatic balance. Worse, I couldn’t snatch it a rigid designator, leading to a dangerous pun-core compromise. But let me apologize and elaborate.</p>
-<p><a href="https://en.wikipedia.org/wiki/Functional_fixedness" title="Functional fixedness - Wikipedia">Functional fixity</a> is a term from cognitive science describing one’s inability to use an object in a novel way. It’s your memory entangling the representation of the object with that of its intended function, typically after prolonged praxis.</p>
-<p>For instance, after learning to work a monad to a particular goal, a fledgling Haskeller may feel inclined to blog about what monads are like, promptly forgetting the structure and laws of the mathematical object, a lapse that has little to do, I’ll argue, with the suitability of figurative language for presenting abstract concepts.</p>
-<p>Brent Yorgey’s <a href="https://byorgey.wordpress.com/2009/01/12/abstraction-intuition-and-the-monad-tutorial-fallacy/" title="Abstraction, intuition, and the “monad tutorial fallacy”">classic article</a> tells the story of the failed monad tutor who supplies just the root of his intuition and expects the entire tree to magically string along into his reader’s head, confusing, as it were, the pattern used for naming common metaphors (<strong>A is B</strong>), with the metaphors themselves, which develop from elementary inter-domain mappings of arbitrary complexity. He concludes with a fair advice: play with the abstract concept itself, don’t just get accustomed with more of its incarnations and business roles.</p>
-<p>But throughout the piece there is an undertone, or potential uncharitable reading, of a rusty grammarian that ’splains: <em>“analogy is bad, m’kay?”</em>. The Haskell community was quick to pick up on it, and confessed they actually take no pickle with <a href="http://blog.plover.com/prog/burritos.html" title="Monads are like burritos - The Universe of Discourse">burrito</a> expositions. And I concur, even outright allegories are fly as long as the interpretation maintains a sense of <a href="http://blog.sigfpe.com/2014/05/types-and-two-approaches-to-problem.html" title="Types, and two approaches to problem solving - A Neighborhood of Infinity">faithfulness</a> that allows crisscrossing the domain boundaries without garbling the meaning. I also think that people are pretty good at it, and the confusion Brent’s article poses is a bit of a straw man, as the real problem is that of functional fixity, or, in general, <em>“the curse of knowledge”</em>, two concepts I’ve recently been exposed to by Steven Pinker’s wonderful book <a href="http://wadler.blogspot.ro/2016/02/steven-pinkers-sense-of-style.html" title="Steven Pinker's The Sense of Style - Wadler's Blog">“The Sense of Style”</a>.</p>
-<p>One successful way of dealing with such fixations is indeed stripping the usage connotations away from the description of the decomposed, un-narrativised object, like substituting the <em>wick</em> of a <em>candle</em> with <em>interwoven fibrous strands</em>, but another reported method specifically involves judicious use of shortcutting analogy. Rather then wailing destitution, potatoes can be your salvation.</p>
-<p>As for myself, after 2 years packed with Haskell related papers, books, online courses and other materials, I still cannot recognize a full frontal monad, eyes scolding, for I’ve got into a habit of only thinking about them at practical applications’ express requisition. So I wish to transfix this routine with gratuitous multi-modal strolls of prolixity and higher-ranked functional references. Or so this cortege of thought seems to betoken.</p>
+<div id="contents" class="section level3">
+<h3>Contents</h3>
+<ul>
+<li><a href="#static-generator">Static generator</a></li>
+<li><a href="#web-theme">Web theme</a></li>
+<li><a href="#comments">Comments</a></li>
+<li><a href="#tracking-analytics">Tracking &amp; analytics</a></li>
+</ul>
 </div>
-<div id="the-markdown-and-the-beast" class="section level2">
-<h2>The markdown and the beast</h2>
+<div id="static-generator" class="section level2">
+<h2>Static generator</h2>
 <p>Overall I’m quite pleased with <a href="http://jaspervdj.be/hakyll" title="Hakyll">Hakyll</a>, the Haskell <a href="http://jekyllrb.com/" title="Jakyll">Jakyll</a>.</p>
 <p>For convenient <a href="https://pages.github.com" title="GitHub Pages">GitHub Pages</a> hosting, you can either keep the sources in the same repo with the output, in which case you’ll need some convoluted scripts to strap it together, or you can figure it’s not worth the bother and just manage a slightly more tedious <a href="https://github.com/mmn80/mmn80.github.io.src" title="Source Repo for this Blog">2</a> - <a href="https://github.com/mmn80/mmn80.github.io" title="Main GitHub Pages Repo">repo</a> setup, like me. After committing changes in the source repo, I run <code>site deploy</code> and then <code>git commit</code> and <code>git push</code> the front repo. I even dig the extra control.</p>
 <p><em>Hakyll</em> comes integrated with the mighty, multilingual <a href="http://pandoc.org/README.html" title="Pandoc User’s Guide">pandoc</a>, that champions an enriched <a href="http://daringfireball.net/projects/markdown/" title="Markdown">Markdown</a> dialect I’m delighted to dance with. In particular, you can write paper-like articles, publish them straightforwardly on your blog, and generate alongside a <em>pdf</em> with the <code>pandoc</code> executable, all the while inlining <em>LaTeX</em> for math.</p>
@@ -59,17 +58,33 @@
 <p>I followed <a href="http://blog.sigfpe.com/" title="A Neighborhood of Infinity">Dan Piponi</a>‘s example and inlined the <em>archive</em> page into <em>home</em> and <em>contact</em> into the footer. I reckoned the text that would normally go there would be something generic, and surely I’d write more compelling things in the actual blog?!? So why would I pin the trivia? These days, personal info belongs to social networking accounts. And being more honest by placing the index inside <code>index.html</code> should benefit search engine robots’ situational awareness (humans’ too!).</p>
 <p>Hope this pasta is plain enough for a copy.</p>
 </div>
+<div id="comments" class="section level2">
+<h2>Comments</h2>
+<p>Initially I had a <em>Disqus</em> comments section, but then I read <a href="http://chrisdone.com/posts/blog-comments" title="Comments on my blog - Chris Done">Chris Done’s post</a> and reconsidered.</p>
+<p>Indeed, the matter was bothering me since the beginning but couldn’t quite say why. I don’t really buy the “freedom of expression” or “unpopular ideas” framing, but still regard blog comments sections as the worst possible avenue of online debate. Yes, worse then youtube, but let me explain.</p>
+<p>First, let’s get out of the way issues like typos and other corrections. E-mail works great for that.</p>
+<p>Then there is the problem of ownership, or hosting, in relation to each comment and the discussion as a whole. <em>Disqus</em> deals with the first part, I assume (website disappears, but you keep your, now meaningless, comments), but for people to entrust their effort posts to a host, they need to ascertain its reliability, fairness, and general usefulness. This may involve having good and active moderators, trusting the website won’t drop its back archives due to some natural, financial or legal issue, expecting many dialog-worthy individuals on the same page, etc.</p>
+<p>But, due to network effects, it is in the nature of all these things to reinforce each other. Hence, the best places to publicly talk about anything, including blog posts, will always be popular hangouts specifically tuned for this purpose, like <em>reddit</em> and other forums, or community blogs like the <a href="https://golem.ph.utexas.edu/category/" title="The n-Category Café">The n-Category Café</a>, or famous professors’ blogs.</p>
+<p>As for the rest of us, if once in a while you write an article whose intent is to provoke debate, you can always post it in such a forum and, if you like, link the forum thread at the back of your article.</p>
+</div>
+<div id="tracking-analytics" class="section level2">
+<h2>Tracking &amp; analytics</h2>
+<p>I’m a total hypocrite.</p>
+<p>In fact, I wont add much as it should be pretty clear what I mean. This is also why I think confiding private data to governments or corporations is the worst idea ever. They are people like you &amp; me, after all. Well, me, as I don’t know you.</p>
+</div>
 </div>
 
 
 <h1> Older posts </h1>
 <div class="contents">
 
+    <a href="./posts/2016-02-22-name.html">Pun hazard</a> - February 22, 2016
+
 </div>
 
 <h1> Tags </h1>
 <div class="contents">
-<a href="./tags/meta.html">meta (1)</a>
+<a href="./tags/meta.html">meta (2)</a>
 </div>
 
         </div>
