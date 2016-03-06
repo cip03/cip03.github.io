@@ -19,6 +19,7 @@
 <h3>Contents</h3>
 <ul>
 <li><a href="#static-generator">Static generator</a></li>
+<li><a href="https://hackage.haskell.org/package/diagrams" title="The diagrams package on Hackage">Diagrams</a></li>
 <li><a href="#web-theme">Web theme</a></li>
 <li><a href="#comments">Comments</a></li>
 <li><a href="#tracking-analytics">Tracking &amp; analytics</a></li>
@@ -32,10 +33,38 @@
 <p>To render the formulas you can pick a standard <em>js</em> service like <em>MathJax</em> or, with the <a href="http://hackage.haskell.org/package/pandoc/docs/Text-Pandoc-Options.html#t:HTMLMathMethod" title="Documentation for pandoc math rendering options"><code>WebTeX</code></a> constructor, a remote image service like <em>Google Chart API</em>, or you can generate math images directly on your server with the <a href="https://hackage.haskell.org/package/latex-formulae-hakyll-0.2.0.1" title="The latex-formulae-hakyll package on Hackage"><strong>latex-formulae-hakyll</strong></a> package, all painless to setup. Currently, the blog employs the <a href="http://hackage.haskell.org/package/pandoc/docs/Text-Pandoc-Options.html#t:HTMLMathMethod" title="Documentation for pandoc math rendering options"><code>MathML</code></a> variant to deliver <em>MathML</em> directly inside the <em>XHTML</em>. Moreover, it injects an icon under the headline (but only if the <em>Markdown</em> source file is explicitly tagged with <code>math</code> in the header section, like this post’s), to encourage readers to use a browser sporting native <em>MathML</em>, like <em>Firefox</em> or <em>Safari</em>.</p>
 <p>Here’s a test formula for you: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>f</mi><mo accent="true">^</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>ξ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mi>∞</mi></mrow><mi>∞</mi></msubsup><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.222em"></mspace><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>π</mi><mi>i</mi><mi>x</mi><mi>ξ</mi></mrow></msup><mspace width="0.167em"></mspace><mi>d</mi><mi>x</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">\hat{f}(\xi) = \int_{-\infty}^\infty f(x)\ e^{- 2\pi i x \xi}\,dx.</annotation></semantics></math></p>
 </div>
+<div id="diagrams" class="section level2">
+<h2>Diagrams</h2>
+<p>I’m searching for a language in the style of <em>Markdown</em>, a thin layer on top of <em>SVG</em> with little dependencies and whose compiler would be easy to reproduce in whatever platform of the future.</p>
+<p><em>AsciiArt</em> can also be read in source form, and there are some scripts out there to convert it into something vectorial, but it’s still too limited as a general solution, and does not support “pass through” extensibility like <em>Markdown</em>. At the other extreme I could use <a href="https://hackage.haskell.org/package/diagrams" title="The diagrams package on Hackage">diagrams</a> directly inside a code block and run it with <code>runghc</code> from the filter.</p>
+<p>So currently I’d generate the <em>SVG</em> in <em>Inkscape</em> or, for simpler diagrams I’d write them by hand. To make the latter easier, I added a <em>Pandoc</em> filter to <em>Hakyll</em> and a code block parser so I can write <em>XML</em> with indentation rules instead of tags. I’m thinking to improve it with a simple template system, so I could define higher level things like “nodes” and “links” and reduce in this way the verbosity. I like this approach very much and I hope I’ll get to something deserving of the <em>Markdown</em> analogy.</p>
+<svg width="40em" height="5em" viewBox="0 0 400 50">
+  <defs>
+    <symbol id="node">
+      <ellipse style="fill:white;stroke:black;stroke-width:3;" cx="24" cy="24" rx="20" ry="20" />
+      <text text-anchor="middle" x="24" y="28" style="font-size:1em;">
+        λ
+      </text>
+    </symbol>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" />
+    </marker>
+    <symbol id="arrow">
+      <path style="fill:none;stroke:black;stroke-width:3;" d="M2,5 C2,5 50,5 50,5" marker-end="url(#arrowhead)" />
+    </symbol>
+  </defs>
+  <use x="0" y="0" xlink:href="#node" />
+  <use x="100" y="0" xlink:href="#node" />
+  <use x="200" y="0" xlink:href="#node" />
+  <use x="42" y="18" xlink:href="#arrow" />
+  <use x="0" y="0" xlink:href="#arrow" transform="translate(205,28) rotate(180)" />
+</svg>
+</div>
 <div id="web-theme" class="section level2">
 <h2>Web theme</h2>
 <p>I started with the default <em>Hakyll</em> theme but made a few adjustments.</p>
 <p>All sizes, including fonts and page width, are relative (in <code>em</code> units). There is also no <code>font-family</code> setting, so the site will use the default fonts on all devices. High-dpi displays won’t collapse the text into a string of microscopic black holes, while on wide screens the need for binoculars and current line markers for navigation will be eschewed.</p>
+<p>I’m using the <code>text-align: justify</code> alignment together with the <code>hyphens: auto</code> <em>CSS3</em> option which I just learned about. Initially the document was <em>XHTML</em> but in order to make <code>hyphens: auto</code> work, I needed to add beside <code>xml:lang=&quot;en&quot;</code> also <code>lang=&quot;en&quot;</code> which makes the validator complain. So I switched to <em>HTML5</em> and everything is fine.</p>
 <p>The black icons are vectorial (<em>SVG</em>), so they look smooth on high-dpi too. With a <em>SVG</em> editor like <a href="https://inkscape.org/en/" title="Inkscape">Inkscape</a> it’s snappy to take some public domain icon from the net (wikipedia has plenty) and delete layers, change colors and sizes, or add your own shapes. The hover effect just uses the <em>CSS3</em> <code>opacity</code> property. I’ll be using <em>SVG</em> for diagrams too.</p>
 <p>I followed <a href="http://blog.sigfpe.com/" title="A Neighborhood of Infinity">Dan Piponi</a>‘s example and inlined the <em>archive</em> page into <em>home</em> and <em>contact</em> into the footer. I reckoned the text that would normally go there would be something generic, and surely I’d write more compelling things in the actual blog?!? So why would I pin the trivia? These days, personal info belongs to social networking accounts. And being more honest by placing the index inside <code>index.html</code> should benefit search engine robots’ situational awareness (humans’ too!).</p>
 <p>Hope this pasta is plain enough for a copy.</p>
