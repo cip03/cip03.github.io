@@ -8,8 +8,200 @@
         <name>Călin Ardelean</name>
         <email>mmn80cpu@gmail.com</email>
     </author>
-    <updated>2016-02-23T00:00:00Z</updated>
+    <updated>2016-11-12T00:00:00Z</updated>
     <entry>
+    <title>Phantom cats in a dynamical world</title>
+    <link href="http://blog.mmn80.xyz/posts/2016-11-12-dynamic-existential.html" />
+    <id>http://blog.mmn80.xyz/posts/2016-11-12-dynamic-existential.html</id>
+    <published>2016-11-12T00:00:00Z</published>
+    <updated>2016-11-12T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>The <em>Criticism</em> section of the Wikipedia article on <a href="https://en.wikipedia.org/wiki/Late_binding" title="Late binding - Wikipedia">late binding</a> states:</p>
+<blockquote>
+<p>Late binding necessarily prevents the use of static type checking.</p>
+</blockquote>
+<p>That may be true, but traditional dynamic languages go further and enforce all bindings to be dynamic, deporting static types en masse. More recently, a movement known as “gradual typing” seeks to reverse this policy, with systems such as <a href="https://docs.racket-lang.org/ts-guide/index.html" title="The Typed Racket Guide">Typed Racket</a> reintroducing some (weak) static types to a dynamic language built on top of a more sophisticated compiler infrastructure.</p>
+<p>In this post we’ll do the converse. We will see how a compiled language with a sufficiently powerful static type system, in our case <em>GHC Haskell</em>, can accommodate a fully dynamic meta environment that supports “real” live coding. We will use abstract data types implemented with the help of existential quantification to solve the module dependency problem that would otherwise force us to restart the world after every change and recompilation of either entity declaration modules, or world behaviors (eg: physics engine). We will also encounter phantom cats.</p>
+<hr />
+<p>Let’s start with a 3 module setup:</p>
+<ul>
+<li><code>Word</code> will hold our global state together with the abstract glue</li>
+<li><code>Physics</code> will contain generic world behaviors</li>
+<li><code>Cat</code> will be our example entity</li>
+</ul>
+<p><code>Physics</code> and <code>Cat</code> will import <code>World</code> and we will be able to independently make modifications and dynamically reload them in <code>ghci</code> without rebooting the world.</p>
+<hr />
+<div id="the-world" class="section level2">
+<h2>The world</h2>
+<p>This is how our world might look:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE ExistentialQuantification, RankNTypes, GeneralizedNewtypeDeriving #-}</span>
+
+<span class="kw">module</span> <span class="dt">World</span> (<span class="dt">Entity</span>(<span class="fu">..</span>), <span class="dt">Ref</span>, spawn, withEntity, foldWorld) <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">Control.Concurrent.MVar</span>
+<span class="kw">import </span><span class="dt">System.IO.Unsafe</span>
+<span class="kw">import qualified</span> <span class="dt">Data.IntMap.Strict</span> <span class="kw">as</span> <span class="dt">Map</span>
+
+<span class="kw">class</span> <span class="dt">Entity</span> a <span class="kw">where</span>
+<span class="ot">  health ::</span> a <span class="ot">-&gt;</span> <span class="dt">Int</span>
+<span class="ot">  attack ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a
+
+<span class="kw">data</span> <span class="dt">EntityRecord</span> <span class="fu">=</span> forall a<span class="fu">.</span> <span class="dt">Entity</span> a <span class="ot">=&gt;</span> <span class="dt">EntityRecord</span> a
+
+<span class="ot">world ::</span> <span class="dt">MVar</span> (<span class="dt">Map.IntMap</span> <span class="dt">EntityRecord</span>)
+world <span class="fu">=</span> unsafePerformIO <span class="fu">$</span> newMVar Map.empty</code></pre></div>
+<p><code>Entity</code> is our abstract entity class with a sample getter and setter inside.</p>
+<p><code>EntityRecord</code> existentially wraps a pointer to a value of a type implementing the <code>Entity</code> interface, <em>together with the dictionary</em> of functions that any future version of us can use to interact with it abstractly, as we shall see.</p>
+<p>We put all entities inside the global, thread safe, heterogeneous <code>world</code> map that will maintain our late bindings.</p>
+<p>We also need an (internal) unique ID supply for the keys inside:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Ref</span> <span class="fu">=</span> <span class="dt">Ref</span> {<span class="ot"> getRef ::</span> <span class="dt">Int</span> } <span class="kw">deriving</span> <span class="dt">Num</span>
+
+<span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Ref</span> <span class="kw">where</span> show (<span class="dt">Ref</span> k) <span class="fu">=</span> show k
+
+<span class="ot">ref ::</span> <span class="dt">MVar</span> <span class="dt">Ref</span>
+ref <span class="fu">=</span> unsafePerformIO <span class="fu">.</span> newMVar <span class="fu">$</span> <span class="dt">Ref</span> <span class="dv">0</span></code></pre></div>
+<p>The generic <code>spawn</code> function will be used in a context where we have a specific entity type and its accompanying <code>Entity</code> instance.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">spawn ::</span> <span class="dt">Entity</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Ref</span>
+spawn e <span class="fu">=</span> <span class="kw">do</span>
+  <span class="dt">Ref</span> k <span class="ot">&lt;-</span> takeMVar ref
+  <span class="kw">let</span> r <span class="fu">=</span> <span class="dt">Ref</span> (k <span class="fu">+</span> <span class="dv">1</span>)
+  putMVar ref (r <span class="ot">`seq`</span> r)
+  w <span class="ot">&lt;-</span> takeMVar world
+  putMVar world <span class="fu">$</span> Map.insert (getRef r) (<span class="dt">EntityRecord</span> e) w
+  return r</code></pre></div>
+<p>The next 2 functions allow us to work generically with the world:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">withEntity ::</span> <span class="dt">Ref</span> <span class="ot">-&gt;</span> (forall a<span class="fu">.</span> <span class="dt">Entity</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> (a, b)) <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> b)
+withEntity (<span class="dt">Ref</span> k) f <span class="fu">=</span> <span class="kw">do</span>
+  w <span class="ot">&lt;-</span> takeMVar world
+  <span class="kw">let</span> (w&#39;, mb) <span class="fu">=</span> <span class="kw">case</span> Map.lookup k w <span class="kw">of</span>
+                   <span class="dt">Just</span> (<span class="dt">EntityRecord</span> e) <span class="ot">-&gt;</span> <span class="kw">let</span> (e&#39;, x) <span class="fu">=</span> f e <span class="kw">in</span>
+                                            (Map.insert k (<span class="dt">EntityRecord</span> e&#39;) w, <span class="dt">Just</span> x)
+                   <span class="dt">Nothing</span> <span class="ot">-&gt;</span> (w, <span class="dt">Nothing</span>)
+  putMVar world w&#39;
+  return mb
+
+<span class="ot">foldWorld ::</span> <span class="dt">Monoid</span> m <span class="ot">=&gt;</span> (forall a<span class="fu">.</span> <span class="dt">Entity</span> a <span class="ot">=&gt;</span> <span class="dt">Ref</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> m) <span class="ot">-&gt;</span> <span class="dt">IO</span> m
+foldWorld f <span class="fu">=</span> readMVar world <span class="fu">&gt;&gt;=</span> return <span class="fu">.</span> Map.foldMapWithKey f&#39;
+  <span class="kw">where</span> f&#39; k (<span class="dt">EntityRecord</span> e) <span class="fu">=</span> f (<span class="dt">Ref</span> k) e</code></pre></div>
+<p><code>withEntity</code> does a lookup based on a <code>Ref</code> and applies a caller supplied generic entity update function that also returns a <code>b</code>. Hence, the argument this function receives will be “late bound”.</p>
+<hr />
+<p>We use here <code>RankNTypes</code>. In case you see this for the first time it’s important to understand who, among the caller and callee, has the responsibility to supply each argument in a nested, polymorphic function type. If it’s the callee we call such location in the shape of the type (like the return type of the whole function) <strong>positive</strong>. And if it’s the caller, <strong>negative</strong>. It so happens that <em>School of Haskell</em> has published a <a href="https://www.schoolofhaskell.com/user/commercial/content/covariance-contravariance" title="Covariance, contravariance, and positive and negative position - School of Haskell">comprehensive article</a> on this very topic just as I was writing this. Lucky me.</p>
+<p>After understanding variance we should observe that we are not talking here about who supplies values at run time, but rather who supplies type arguments at type checking time. But the analogy carries well when we remember that in <em>System F</em> (the basis for <em>Haskell Core</em>), type applications are explicit, and even more, in dependently typed languages all global distinctions between types and values melt away.</p>
+<p>In <em>Core</em>, functions actually have extra lambda bindings for their type arguments, and these lambdas can appear in positive or negative positions just as before, except that the type applications can be evaluated at compile time, and all types eventually erased due to the limitations imposed in the language.</p>
+<p>In old school parametric polymorphism all types are rank 1, meaning it’s always the caller that fills in type arguments, regardless of the variance of the (run time) arguments that have those types. So all big lambdas float to the top of a nested function, while small lambdas can get stuck submerged in a negative position.</p>
+<p>Combining the two concepts, we see that a <em>negative</em> type argument afforded by a higher rank type not only that it forwards the whodunit question from the caller to the callee, but also from compile time to run time, in terms of <strong>when can we compile</strong> the specialized version of the function. This would be a sort of type theoretic explanation of JIT compilation. For the moment a very confused one, I’ll admit. As you may have guessed, I’m no expert.</p>
+<hr />
+<p>Returning to <code>withEntity</code>, both the <code>a</code> and the <code>Entity a</code> instance are chosen by the calee, ourselves, and we will pull those out of our <code>world</code> map.</p>
+<p>The <code>foldWorld</code> function does a similar job as the <code>foldMap</code> from <code>Traversable</code>, but uses the above trick to do it abstractly.</p>
+<hr />
+</div>
+<div id="the-entity" class="section level2">
+<h2>The entity</h2>
+<p>In the situation of losing all health, a non-black cat will turn black, and after that any attack will make it more powerful:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Cat</span> <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">World</span>
+
+<span class="kw">data</span> <span class="dt">Cat</span> <span class="fu">=</span> <span class="dt">Cat</span> {<span class="ot"> catHealth ::</span> <span class="dt">Int</span>,<span class="ot"> blackCat ::</span> <span class="dt">Bool</span> }
+
+<span class="kw">instance</span> <span class="dt">Entity</span> <span class="dt">Cat</span> <span class="kw">where</span>
+  health <span class="fu">=</span> catHealth
+  attack p (<span class="dt">Cat</span> h b) <span class="fu">=</span> <span class="kw">if</span> b <span class="kw">then</span> <span class="dt">Cat</span> (h <span class="fu">+</span> p) b
+                            <span class="kw">else</span> <span class="kw">if</span> p <span class="fu">&gt;</span> h <span class="kw">then</span> <span class="dt">Cat</span> <span class="dv">0</span> <span class="dt">True</span>
+                                          <span class="kw">else</span> <span class="dt">Cat</span> (h <span class="fu">-</span> p) b</code></pre></div>
+<hr />
+</div>
+<div id="physics" class="section level2">
+<h2>Physics</h2>
+<p>In our <code>Physics.hs</code> file we will only have a simple generic world tracing function. Notice how we do not import the <code>Cat</code>, and how the type system ensures that the function <code>f</code> we supply to <code>foldWorld</code> only uses the <code>Entity</code> interface abstractly:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Physics</span> (inspectWorld) <span class="kw">where</span>
+
+<span class="kw">import </span><span class="dt">World</span>
+
+<span class="ot">inspectWorld ::</span> <span class="dt">IO</span> <span class="dt">String</span>
+inspectWorld <span class="fu">=</span> foldWorld f
+  <span class="kw">where</span> f r e <span class="fu">=</span> <span class="st">&quot;(id: &quot;</span> <span class="fu">++</span> show r <span class="fu">++</span> <span class="st">&quot;, health: &quot;</span> <span class="fu">++</span> show (health e) <span class="fu">++</span> <span class="st">&quot;) &quot;</span></code></pre></div>
+<p>One could argue that this abstraction is a tremendous limitation concerning what kinds of generic traversals we can write, that we would have to keep adding methods to <code>Entity</code>, which do require rebooting the world.</p>
+<p>But, at least in the case of video games, keeping a fixed, simple, generic type for entities is exactly what people do anyway, for many reasons. For instance, a physics engine, much like a garbage collector, does not care about the complex structure and behaviors of the objects it manages, but only about their mass and shape, mixing in properties like velocity and acceleration in its own private memory.</p>
+<p>Another answer can be this Alan Perlis quote LISP people like to deploy when cornered:</p>
+<blockquote>
+<p>It is better to have 100 functions operate on one data structure than 10 functions on 10 data structures.</p>
+</blockquote>
+<p>Nevertheless, we could extend the simple setup described here with one of the solutions to the expression problem, like the <code>mtl</code> style, data types à la carte, or the <code>Free</code> / <code>Cofree</code> <a href="http://blog.sigfpe.com/2014/05/cofree-meets-free.html" title="A Neighborhood of Infinity: Cofree meets Free">pairing</a>. Exploring this is left as an exercise for the industrious reader. Which includes me, I hope.</p>
+<hr />
+</div>
+<div id="doing-it-live" class="section level2">
+<h2>Doing it live</h2>
+<p>I should point out that the code in this post can also be found on <a href="https://github.com/mmn80/dynamic-meta" title="Github repo containing the code from this post">Github</a>.</p>
+<p>So let’s fire up <code>stack ghci</code> and play.</p>
+<p>The first thing we will do is activate <code>-fobject-code</code>, which allows <code>ghci</code> to use compiled, rather then interpreted code, albeit without <code>-O2</code> optimizations (but everything works with interpreted code as well). More, for all libraries we use, <code>ghci</code> will link against their statically or dynamically compiled versions (including the optimizations). So we can use a multi package setup for our game to arbitrate this convenience vs. performance trade off. Additionally, we’ll hope <code>ghci</code> will apply the <code>-O2</code>s in the future.</p>
+<pre class="ghci"><code>λ&gt; :set -fobject-code 
+λ&gt; :reload</code></pre>
+<p>Let’s spawn a cat, send an attack message, and inspect the world:</p>
+<pre class="ghci"><code>λ&gt; spawn $ Cat 100 False
+1
+λ&gt; withEntity 1 $ \cat -&gt; (attack 10 cat, health cat)
+Just 100
+λ&gt; inspectWorld
+&quot;(id: 1, health: 90) &quot;</code></pre>
+<p>All fine. Now let’s open our <code>Cat.hs</code> file, change how attacks work by making them twice as damaging, then save the file:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Entity</span> <span class="dt">Cat</span> <span class="kw">where</span>
+  health <span class="fu">=</span> catHealth
+  attack p (<span class="dt">Cat</span> h b) <span class="fu">=</span> <span class="kw">if</span> b <span class="kw">then</span> <span class="dt">Cat</span> (h <span class="fu">+</span> p) b
+                            <span class="kw">else</span> <span class="kw">if</span> p <span class="fu">&gt;</span> h <span class="kw">then</span> <span class="dt">Cat</span> <span class="dv">0</span> <span class="dt">True</span>
+                                          <span class="kw">else</span> <span class="dt">Cat</span> (h <span class="fu">-</span> <span class="dv">2</span><span class="fu">*</span>p) b</code></pre></div>
+<p>We now switch back to our <code>ghci</code> terminal and <code>:reload</code> (I formatted the output a bit):</p>
+<pre class="ghci"><code>λ&gt; :reload
+[3 of 4] Compiling Cat  ( /home/calin/src/dynamic-meta/src/Cat.hs,
+                          /home/calin/src/dynamic-meta/.stack-work/odir/Cat.o )
+Ok, modules loaded:
+World (/home/calin/src/dynamic-meta/.stack-work/odir/World.o),
+Physics (/home/calin/src/dynamic-meta/.stack-work/odir/Physics.o),
+Cat (/home/calin/src/dynamic-meta/.stack-work/odir/Cat.o)</code></pre>
+<p><code>ghci</code> has recompiled our <code>Cat.hs</code> and has placed the resulting object file in a subfolder called <code>odir</code> of our <code>stack</code> working environment.</p>
+<p>Now let’s check the world:</p>
+<pre class="ghci"><code>λ&gt; inspectWorld 
+&quot;(id: 1, health: 90) &quot;</code></pre>
+<p>Interesting. Our old cat is still there, even if neither the source file defining its internals, nor the compiled object file still exist. A phantom cat!</p>
+<p>Let’s see if we can add a new cat and test how both it and the phantom behave when attacked:</p>
+<pre class="ghci"><code>λ&gt; spawn $ Cat 100 False
+2
+λ&gt; withEntity 1 $ \cat -&gt; (attack 10 cat, health cat)
+Just 90
+λ&gt; withEntity 2 $ \cat -&gt; (attack 10 cat, health cat)
+Just 100
+λ&gt; inspectWorld
+&quot;(id: 1, health: 80) (id: 2, health: 80) &quot;</code></pre>
+<p>Our new cat takes a 20 hit for a 10 attack, as expected, but the phantom still takes 10 as before!</p>
+<p>So there it is, 2 versions of the “same” object type, together with their methods, both compiled, coexisting in peace and type safety inside the same heap. If this does not make both Alan Kay and Robert Harper happy, I don’t know what will. I’m joking, of course. Nothing can restore those guys’ faith in humanity after what we did with their ideas.</p>
+<p>We can also make changes to the <code>Physics</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">inspectWorld ::</span> <span class="dt">IO</span> <span class="dt">String</span>
+inspectWorld <span class="fu">=</span> foldWorld f
+  <span class="kw">where</span> f r e <span class="fu">=</span> <span class="st">&quot;(id = &quot;</span> <span class="fu">++</span> show r <span class="fu">++</span> <span class="st">&quot;, health = &quot;</span> <span class="fu">++</span> show (health e) <span class="fu">++</span> <span class="st">&quot;) &quot;</span></code></pre></div>
+<p>…reload, and check if the world still exists:</p>
+<pre class="ghci"><code>λ&gt; :reload
+[3 of 4] Compiling Physics ( /home/calin/src/dynamic-meta/src/Physics.hs,
+                             /home/calin/src/dynamic-meta/.stack-work/odir/Physics.o )
+Ok, modules loaded:
+World (/home/calin/src/dynamic-meta/.stack-work/odir/World.o),
+Physics (/home/calin/src/dynamic-meta/.stack-work/odir/Physics.o),
+Cat (/home/calin/src/dynamic-meta/.stack-work/odir/Cat.o).
+λ&gt; inspectWorld
+&quot;(id = 1, health = 80) (id = 2, health = 80) &quot;</code></pre>
+<hr />
+</div>
+<div id="final-remarks" class="section level2">
+<h2>Final remarks</h2>
+<p>If we consider those <code>Ref</code>s as variables, with objects holding dynamic references to each other (by <code>Ref</code>), forcing us to use something like <code>withEntity</code> all the time, then of course we have a late binding implementation that is untyped, unsafe, slow, and in general suffering from all the ills mentioned in that wiki article (“entity not found”, etc).</p>
+<p>Just like in <em>Racket</em>, we can unfold some macros, sub types and contracts to tame them. But we could also have objects hold normal, immutable pointers to each other that only get updated once per frame, automatically. I’ll have to think about this more.</p>
+<hr />
+<p>GHC’s in-house linker that makes all this possible, I have no clue about what it does. Tis magic.</p>
+<hr />
+<p>GHC has a thing called <code>Dynamic</code> that cannot be used to implement live coding to the same extent, since using it in a generic world traversal introduces a module dependency to the entity definition module. So I think that type, contrary to it’s name, does not capture the full power of “dynamic”, at least not in <a href="http://userpage.fu-berlin.de/~ram/pub/pub_jf47ht81Ht/doc_kay_oop_en" title="Dr. Alan Kay on the Meaning of “Object-Oriented Programming”">Alan Key’s</a> <a href="https://computinged.wordpress.com/2010/09/11/moti-asks-objects-never-well-hardly-ever/" title="In the comments section of this blog post, Alan Key suggests using the term “dynamic” to capture what he meant by OOP before that term&#39;s hijacking">sense</a>.</p>
+<hr />
+<p>As for me, I’ll go read that Reynolds “GEDANKEN” paper Alan Key mentions, and further explore the connection between “dynamic” and “higher rank”, which undoubtedly will turn out to involve some trivial misunderstandings on my part. But at least I’ll have the motivation to learn more type theory.</p>
+</div>]]></summary>
+</entry>
+<entry>
     <title>Notes about this web site's bowels</title>
     <link href="http://blog.mmn80.xyz/posts/2016-02-23-blog-setup.html" />
     <id>http://blog.mmn80.xyz/posts/2016-02-23-blog-setup.html</id>
@@ -38,13 +230,10 @@
 <p>I’m searching for a language in the style of <em>Markdown</em>, a thin layer on top of <em>SVG</em> with little dependencies and whose compiler would be easy to reproduce in whatever platform of the future.</p>
 <p><em>AsciiArt</em> can also be read in source form, and there are some scripts out there to convert it into something vectorial, but it’s still too limited as a general solution, and does not support “pass through” extensibility like <em>Markdown</em>. At the other extreme I could use <a href="https://hackage.haskell.org/package/diagrams" title="The diagrams package on Hackage">diagrams</a> directly inside a code block and run it with <code>runghc</code> from the filter.</p>
 <p>So currently I’d generate the <em>SVG</em> in <em>Inkscape</em> or, for simpler diagrams I’d write them by hand. To make the latter easier, I added a <em>Pandoc</em> filter to <em>Hakyll</em> and a code block parser so I can write <em>XML</em> with indentation rules instead of tags. I’m thinking to improve it with a simple template system, so I could define higher level things like “nodes” and “links” and reduce in this way the verbosity. I like this approach very much and I hope I’ll get to something deserving of the <em>Markdown</em> analogy.</p>
-<svg width="40em" height="5em" viewBox="0 0 400 50">
+<svg width="40em" height="5em" viewBox="-100 0 400 50">
   <defs>
     <symbol id="node">
       <ellipse style="fill:white;stroke:black;stroke-width:3;" cx="24" cy="24" rx="20" ry="20" />
-      <text text-anchor="middle" x="24" y="28" style="font-size:1em;">
-        λ
-      </text>
     </symbol>
     <marker id="arrowhead" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
       <path d="M 0 0 L 10 5 L 0 10 z" />
@@ -52,10 +241,31 @@
     <symbol id="arrow">
       <path style="fill:none;stroke:black;stroke-width:3;" d="M2,5 C2,5 50,5 50,5" marker-end="url(#arrowhead)" />
     </symbol>
+    <filter id="conv" filterUnits="userSpaceOnUse" x="0" y="0" width="500" height="500">
+      <feConvolveMatrix order="5" preserveAlpha="true" kernelMatrix="2 0 1 0 2 0 1 2 1 0 1 2 -8 2 1 0 1 2 1 0 2 0 1 0 2" />
+    </filter>
   </defs>
-  <use x="0" y="0" xlink:href="#node" />
-  <use x="100" y="0" xlink:href="#node" />
-  <use x="200" y="0" xlink:href="#node" />
+  <g filter="url(#conv)">
+    <use xlink:href="#node" />
+    <text text-anchor="middle" x="24" y="28">
+      λ
+    </text>
+  </g>
+  <g transform="translate(100,0)">
+    <use xlink:href="#node" />
+    <text text-anchor="middle" x="24" y="28">
+      λ
+        <tspan fill="red">
+          π
+        </tspan>
+    </text>
+  </g>
+  <g transform="translate(200,0)" filter="url(#conv)">
+    <use xlink:href="#node" />
+    <text text-anchor="middle" x="24" y="28" fill="red">
+      π
+    </text>
+  </g>
   <use x="42" y="18" xlink:href="#arrow" />
   <use x="0" y="0" xlink:href="#arrow" transform="translate(205,28) rotate(180)" />
 </svg>
