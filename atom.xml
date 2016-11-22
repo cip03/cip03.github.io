@@ -58,13 +58,18 @@ world <span class="fu">=</span> unsafePerformIO <span class="fu">$</span> newMVa
 <span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Ref</span> <span class="kw">where</span> show (<span class="dt">Ref</span> k) <span class="fu">=</span> show k
 
 <span class="ot">ref ::</span> <span class="dt">MVar</span> <span class="dt">Ref</span>
-ref <span class="fu">=</span> unsafePerformIO <span class="fu">.</span> newMVar <span class="fu">$</span> <span class="dt">Ref</span> <span class="dv">0</span></code></pre></div>
-<p>The generic <code>spawn</code> function will be used in a context where we have a specific entity type and its accompanying <code>Entity</code> instance.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">spawn ::</span> <span class="dt">Entity</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Ref</span>
-spawn e <span class="fu">=</span> <span class="kw">do</span>
+ref <span class="fu">=</span> unsafePerformIO <span class="fu">.</span> newMVar <span class="fu">$</span> <span class="dt">Ref</span> <span class="dv">0</span>
+
+<span class="ot">newRef ::</span> <span class="dt">IO</span> <span class="dt">Ref</span>
+newRef <span class="fu">=</span> <span class="kw">do</span>
   <span class="dt">Ref</span> k <span class="ot">&lt;-</span> takeMVar ref
   <span class="kw">let</span> r <span class="fu">=</span> <span class="dt">Ref</span> (k <span class="fu">+</span> <span class="dv">1</span>)
   putMVar ref (r <span class="ot">`seq`</span> r)
+return r</code></pre></div>
+<p>The generic <code>spawn</code> function will be used in a context where we have a specific entity type and its accompanying <code>Entity</code> instance.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">spawn ::</span> <span class="dt">Entity</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Ref</span>
+spawn e <span class="fu">=</span> <span class="kw">do</span>
+  r <span class="ot">&lt;-</span> newRef
   w <span class="ot">&lt;-</span> takeMVar world
   putMVar world <span class="fu">$</span> Map.insert (getRef r) (<span class="dt">SomeEntity</span> e) w
   return r</code></pre></div>
@@ -85,9 +90,9 @@ foldWorld f <span class="fu">=</span> readMVar world <span class="fu">&gt;&gt;=<
 <p><code>withEntity</code> does a lookup based on a <code>Ref</code> and applies a caller supplied generic entity update function that also returns a <code>b</code>. Hence, the argument this function receives will be “late bound”.</p>
 <hr />
 <p>We use here <a href="https://ocharles.org.uk/blog/guest-posts/2014-12-18-rank-n-types.html" title="24 Days of GHC Extensions: Rank N Types">higher rank polymorphism</a>.</p>
-<p>The usual rank 1 parametric polymorphism that we find in Haskell 98 only allows type quantifiers (<code>forall</code>s) at the beginning of a nested function’s type. When translated to the intermediate language <em>Core</em>, which is based on the powerful <em>System F</em>, these <code>forall</code>s are replaced with extra arguments, except that they are written with big <code>Λ</code>s, rather then small <code>λ</code>s, in order to distinguish them as type arguments. At the call site of a polymorphic function these arguments are explicitly instantiated with a (monomorphic) type, and this type is computed at compile time with the type inference algorithm.</p>
+<p>The usual rank 1 parametric polymorphism that we find in Haskell 98 only allows type quantifiers (<code>forall</code>s) at the beginning of a nested function’s type. When translated to the intermediate language <em>Core</em>, which is based on the powerful <em>System F</em>, these <code>forall</code>s are replaced with extra arguments, except that they are written with big <code>Λ</code>s, rather then small <code>λ</code>s, in order to distinguish them as type arguments. At the call site of a polymorphic function these arguments are explicitly instantiated with a (monomorphic) type, and this type is computed at compile time with the HM type inference algorithm.</p>
 <p>Now, if more of the power of <em>System F</em> is exposed through <code>-XRankNTypes</code>, we can write functions that have deeply nested <code>forall</code>s, aka <code>Λ</code>s. Type inference becomes undecidable, so the user has to provide explicit signatures to help the type checker. But notice how this means that it’s no longer the caller’s privilege to always instantiate the type arguments. Similarly, normal <code>λ</code> bindings can also appear in a <a href="https://www.schoolofhaskell.com/user/commercial/content/covariance-contravariance" title="Covariance, contravariance, and positive and negative position - School of Haskell">negative position</a>.</p>
-<p>My observation is that a negatively placed <code>Λ</code> has direct implications for the compiling of specialized versions of polymorphic functions. Firstly, the <strong>place</strong> that triggers specialization is no longer the caller, which now has to itself provide a polymorphic function. Secondly, the <strong>time</strong> when this can happen has extended from compile-time to run-time, which can be as late as the time when our higher ranked function is called. This argument is symmetric, but remember that we want to keep the <code>World</code> static, and only dynamically reload the dependent modules.</p>
+<p>A negatively placed <code>Λ</code> means that this function accepts a polymorphic function as argument, and gets to instantiate it (dynamically!) to whatever type it wants. In particular, as a closure, it can have such a secret type in its environment. With existentials, we wrap a type and a bunch of primitive operations together, and then write rank 2 functions that receive from users a polymorphic function that can only use those primitives, targeting the object it gets as argument but whose type it’ll never know.</p>
 <hr />
 <p>Returning to <code>withEntity</code>, both the <code>a</code> and the <code>Entity a</code> instance are chosen by the calee, ourselves, and we will pull those out of our <code>world</code> map.</p>
 <p>The <code>foldWorld</code> function does a similar job as the <code>foldMap</code> from <code>Traversable</code>, but uses the above trick to do it abstractly.</p>
@@ -130,7 +135,7 @@ inspectWorld <span class="fu">=</span> foldWorld f
 </div>
 <div id="doing-it-live" class="section level2">
 <h2>Doing it live</h2>
-<p>I should point out that the code in this post can also be found on <a href="https://github.com/mmn80/dynamic-meta" title="Github repo containing the code from this post">Github</a>.</p>
+<p>I should point out that the code in this post can also be found on <a href="https://github.com/mmn80/dynamic-meta" title="Github repo containing the code from this post">Github</a>. That repo also showcases other methods for live coding, which I’ll discuss in future posts.</p>
 <p>So let’s fire up <code>stack ghci</code> and play.</p>
 <p>The first thing we will do is activate <code>-fobject-code</code>, which allows <code>ghci</code> to use compiled, rather then interpreted code, albeit without <code>-O2</code> optimizations (but everything works with interpreted code as well). More, for all libraries we use, <code>ghci</code> will link against their statically or dynamically compiled versions (including the optimizations). So we can use a multi package setup for our game to arbitrate this convenience vs. performance trade off. Additionally, we’ll hope <code>ghci</code> will apply the <code>-O2</code>s in the future.</p>
 <pre class="ghci"><code>&gt; :set -fobject-code 
@@ -196,8 +201,6 @@ Cat (/home/calin/src/dynamic-meta/.stack-work/odir/Cat.o).
 <p>GHC’s in-house linker that makes all this possible, I have no clue about what it does. Tis magic.</p>
 <hr />
 <p><strong>cocreature</strong> has a <a href="https://purelyfunctional.org/posts/2016-05-20-dynamic-loading-haskell-module.html" title="purelyfunctional.org - Dynamic loading of Haskell modules">blog post</a> showing how to dynamically load GHC compiled modules in general, as long as you do the bookkeeping.</p>
-<hr />
-<p>Inside GHC, there is a type called <code>Dynamic</code> that cannot be used for live coding to the same extent, since opening a <code>Dynamic</code> inside a generic world traversal will introduce a module dependency to the entity definition module. So I think <code>Dynamic</code> does not live up to its name, at least not in <a href="http://userpage.fu-berlin.de/~ram/pub/pub_jf47ht81Ht/doc_kay_oop_en" title="Dr. Alan Kay on the Meaning of “Object-Oriented Programming”">Alan Key’s</a> <a href="https://computinged.wordpress.com/2010/09/11/moti-asks-objects-never-well-hardly-ever/" title="In the comments section of this blog post, Alan Key suggests using the term “dynamic” to capture what he meant by OOP before that term&#39;s hijacking">sense</a>.</p>
 </div>]]></summary>
 </entry>
 <entry>
