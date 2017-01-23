@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Functional Transfixity</title>
-    <link href="http://blog.mmn80.xyz/atom.xml" rel="self" />
-    <link href="http://blog.mmn80.xyz" />
-    <id>http://blog.mmn80.xyz/atom.xml</id>
+    <link href="http://mmn80.github.io/atom.xml" rel="self" />
+    <link href="http://mmn80.github.io" />
+    <id>http://mmn80.github.io/atom.xml</id>
     <author>
         <name>Călin Ardelean</name>
         <email>mmn80cpu@gmail.com</email>
@@ -11,8 +11,8 @@
     <updated>2016-11-12T00:00:00Z</updated>
     <entry>
     <title>Phantom cats in a dynamic world</title>
-    <link href="http://blog.mmn80.xyz/posts/2016-11-12-dynamic-existential.html" />
-    <id>http://blog.mmn80.xyz/posts/2016-11-12-dynamic-existential.html</id>
+    <link href="http://mmn80.github.io/posts/2016-11-12-dynamic-existential.html" />
+    <id>http://mmn80.github.io/posts/2016-11-12-dynamic-existential.html</id>
     <published>2016-11-12T00:00:00Z</published>
     <updated>2016-11-12T00:00:00Z</updated>
     <summary type="html"><![CDATA[<p>The <em>Criticism</em> section of the Wikipedia article on <a href="https://en.wikipedia.org/wiki/Late_binding" title="Late binding - Wikipedia">late binding</a> states:</p>
@@ -205,8 +205,8 @@ Cat (/home/calin/src/dynamic-meta/.stack-work/odir/Cat.o).
 </entry>
 <entry>
     <title>Notes about this web site's bowels</title>
-    <link href="http://blog.mmn80.xyz/posts/2016-02-23-blog-setup.html" />
-    <id>http://blog.mmn80.xyz/posts/2016-02-23-blog-setup.html</id>
+    <link href="http://mmn80.github.io/posts/2016-02-23-blog-setup.html" />
+    <id>http://mmn80.github.io/posts/2016-02-23-blog-setup.html</id>
     <published>2016-02-23T00:00:00Z</published>
     <updated>2016-02-23T00:00:00Z</updated>
     <summary type="html"><![CDATA[<div id="contents" class="section level3">
@@ -298,8 +298,8 @@ Cat (/home/calin/src/dynamic-meta/.stack-work/odir/Cat.o).
 </entry>
 <entry>
     <title>Pun hazard, watch it!</title>
-    <link href="http://blog.mmn80.xyz/posts/2016-02-22-name.html" />
-    <id>http://blog.mmn80.xyz/posts/2016-02-22-name.html</id>
+    <link href="http://mmn80.github.io/posts/2016-02-22-name.html" />
+    <id>http://mmn80.github.io/posts/2016-02-22-name.html</id>
     <published>2016-02-22T00:00:00Z</published>
     <updated>2016-02-22T00:00:00Z</updated>
     <summary type="html"><![CDATA[<p>Welcome to the jungle!</p>

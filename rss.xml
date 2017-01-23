@@ -3,14 +3,14 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/">
     <channel>
         <title>Functional Transfixity</title>
-        <link>http://blog.mmn80.xyz</link>
+        <link>http://mmn80.github.io</link>
         <description><![CDATA[Stories on types, functional programming and the real world]]></description>
-        <atom:link href="http://blog.mmn80.xyz/rss.xml" rel="self"
+        <atom:link href="http://mmn80.github.io/rss.xml" rel="self"
                    type="application/rss+xml" />
         <lastBuildDate>Sat, 12 Nov 2016 00:00:00 UT</lastBuildDate>
         <item>
     <title>Phantom cats in a dynamic world</title>
-    <link>http://blog.mmn80.xyz/posts/2016-11-12-dynamic-existential.html</link>
+    <link>http://mmn80.github.io/posts/2016-11-12-dynamic-existential.html</link>
     <description><![CDATA[<p>The <em>Criticism</em> section of the Wikipedia article on <a href="https://en.wikipedia.org/wiki/Late_binding" title="Late binding - Wikipedia">late binding</a> states:</p>
 <blockquote>
 <p>Late binding necessarily prevents the use of static type checking.</p>
@@ -199,12 +199,12 @@ Cat (/home/calin/src/dynamic-meta/.stack-work/odir/Cat.o).
 <p><strong>cocreature</strong> has a <a href="https://purelyfunctional.org/posts/2016-05-20-dynamic-loading-haskell-module.html" title="purelyfunctional.org - Dynamic loading of Haskell modules">blog post</a> showing how to dynamically load GHC compiled modules in general, as long as you do the bookkeeping.</p>
 </div>]]></description>
     <pubDate>Sat, 12 Nov 2016 00:00:00 UT</pubDate>
-    <guid>http://blog.mmn80.xyz/posts/2016-11-12-dynamic-existential.html</guid>
+    <guid>http://mmn80.github.io/posts/2016-11-12-dynamic-existential.html</guid>
     <dc:creator>Călin Ardelean</dc:creator>
 </item>
 <item>
     <title>Notes about this web site's bowels</title>
-    <link>http://blog.mmn80.xyz/posts/2016-02-23-blog-setup.html</link>
+    <link>http://mmn80.github.io/posts/2016-02-23-blog-setup.html</link>
     <description><![CDATA[<div id="contents" class="section level3">
 <h3>Contents</h3>
 <ul>
@@ -292,12 +292,12 @@ Cat (/home/calin/src/dynamic-meta/.stack-work/odir/Cat.o).
 <p>I won’t add much as it should be pretty clear what I mean. This is also why I think confiding private data to governments or corporations is the worst idea ever. They are people like you &amp; me, after all. Well, me, as I don’t know you.</p>
 </div>]]></description>
     <pubDate>Tue, 23 Feb 2016 00:00:00 UT</pubDate>
-    <guid>http://blog.mmn80.xyz/posts/2016-02-23-blog-setup.html</guid>
+    <guid>http://mmn80.github.io/posts/2016-02-23-blog-setup.html</guid>
     <dc:creator>Călin Ardelean</dc:creator>
 </item>
 <item>
     <title>Pun hazard, watch it!</title>
-    <link>http://blog.mmn80.xyz/posts/2016-02-22-name.html</link>
+    <link>http://mmn80.github.io/posts/2016-02-22-name.html</link>
     <description><![CDATA[<p>Welcome to the jungle!</p>
 <p>This is my personal blog on functional programming and its application to real-time simulation. You may expect intermittent pieces on logic <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∩</mo><annotation encoding="application/x-tex">\cap</annotation></semantics></math> math <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∩</mo><annotation encoding="application/x-tex">\cap</annotation></semantics></math> physics, and hopefully not too many rants. But ultimately, I have no clue what the blog will end up raving about. For all I know it could spawn enormous Juche pumas playing cylindrical Go along Iapetus’ equatorial ridge, sabotaging the moon’s hydrostatic balance.</p>
 <p>Worse, I couldn’t seize it a rigid designator, leading to a dangerous pun compromise. But allow me to waste your time by first elaborating incoherently and then, apologizing unconvincingly.</p>
@@ -324,7 +324,7 @@ Cat (/home/calin/src/dynamic-meta/.stack-work/odir/Cat.o).
 </ol>
 </div>]]></description>
     <pubDate>Mon, 22 Feb 2016 00:00:00 UT</pubDate>
-    <guid>http://blog.mmn80.xyz/posts/2016-02-22-name.html</guid>
+    <guid>http://mmn80.github.io/posts/2016-02-22-name.html</guid>
     <dc:creator>Călin Ardelean</dc:creator>
 </item>
 
